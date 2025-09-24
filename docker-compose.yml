@@ -1,0 +1,48 @@
+services:
+  subscriptions-service:
+    # container_name: subscriptions-service
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
+    environment:
+      POSTGRES_HOST: postgres
+    volumes:
+      - ./backend/.env:/app/.env
+      - ./backend/migrate:/app/migrate
+    ports:
+    - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  postgres:
+    container_name: postgres
+    image: postgres:15
+    env_file:
+      - ./backend/.env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./backend/migrate/role:/docker-entrypoint-initdb.d
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5  
+    networks:
+      - app-network
+
+volumes:
+  pg_data:
+
+networks:
+  app-network:
+    driver: bridge
+
+

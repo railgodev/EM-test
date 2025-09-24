@@ -36,3 +36,6 @@ go.work
 
 # Temp files
 *.tmp
+
+# env
+.env

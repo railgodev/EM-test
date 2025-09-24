@@ -72,4 +72,6 @@ The following API endpoints are available:
 
 Database migrations are located in the `backend/migrate/migrations` directory. To run the migrations, the application will automatically run them on startup.
 
+# OpenAPI documentation
 
+*   `GET /swagger/index.html`

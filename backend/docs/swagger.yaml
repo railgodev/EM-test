@@ -1,0 +1,312 @@
+swagger: "2.0"
+info:
+  title: Subscription Service API
+  description: API for managing subscriptions
+  version: 1.0.0
+host: localhost:8080
+basePath: /api/v1
+schemes:
+  - http
+paths:
+  /subscriptions:
+    get:
+      summary: List all subscriptions
+      operationId: listSubscriptions
+      tags:
+        - subscriptions
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          type: integer
+          default: 1
+        - name: page_size
+          in: query
+          description: Number of items per page
+          required: false
+          type: integer
+          default: 10
+      responses:
+        '200':
+          description: A list of subscriptions
+          schema:
+            type: object
+            properties:
+              page:
+                type: integer
+              page_size:
+                type: integer
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Subscription'
+        '400':
+          description: Invalid request parameters
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Create a new subscription
+      operationId: createSubscription
+      tags:
+        - subscriptions
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SubscriptionCreate'
+      responses:
+        '201':
+          description: Subscription created successfully
+          schema:
+            $ref: '#/definitions/Subscription'
+        '400':
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /subscriptions/{id}:
+    get:
+      summary: Get a subscription by its ID
+      operationId: getSubscriptionById
+      tags:
+        - subscriptions
+      parameters:
+        - name: id
+          in: path
+          description: Subscription ID
+          required: true
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: A subscription
+          schema:
+            $ref: '#/definitions/Subscription'
+        '400':
+          description: Invalid UUID format
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Subscription not found
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      summary: Update a subscription
+      operationId: updateSubscription
+      tags:
+        - subscriptions
+      parameters:
+        - name: id
+          in: path
+          description: Subscription ID
+          required: true
+          type: string
+          format: uuid
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SubscriptionUpdate'
+      responses:
+        '201':
+          description: Subscription updated successfully
+          schema:
+            $ref: '#/definitions/Subscription'
+        '400':
+          description: Invalid request body or UUID format
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Subscription not found
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Delete a subscription
+      operationId: deleteSubscription
+      tags:
+        - subscriptions
+      parameters:
+        - name: id
+          in: path
+          description: Subscription ID
+          required: true
+          type: string
+          format: uuid
+      responses:
+        '202':
+          description: Subscription deleted successfully
+        '400':
+          description: Invalid UUID format
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Subscription not found
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /subscriptions/total:
+    get:
+      summary: Get the total number of subscriptions
+      operationId: getTotalSubscriptions
+      tags:
+        - subscriptions
+      parameters:
+        - name: start
+          in: query
+          description: Start month and year (MM-YYYY)
+          required: true
+          type: string
+          format: month-year
+          default: "07-2025"
+        - name: end
+          in: query
+          description: End month and year (MM-YYYY)
+          required: true
+          type: string
+          format: month-year
+          default: "09-2025"
+        - name: service_name
+          in: query
+          description: Service name
+          required: true
+          type: string
+          default: "Yandex Plus"
+        - name: user_id
+          in: query
+          description: User ID
+          required: true
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Total number of subscriptions
+          schema:
+            type: object
+            properties:
+              total:
+                type: integer
+        '400':
+          description: Invalid request parameters
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/Error'
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+definitions:
+  Subscription:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        default: "60601fee-2bf1-4721-ae6f-7636e79a0cba"
+      service_name:
+        type: string
+        default: "Yandex Plus"
+      price:
+        type: integer
+        default: 400
+      user_id:
+        type: string
+        format: uuid
+        default: "60601fee-2bf1-4721-ae6f-7636e79a0cba"
+      start_date:
+        type: string
+        format: month-year
+        default: "07-2025"
+      end_date:
+        type: string
+        format: month-year
+        default: "07-2025"
+  SubscriptionCreate:
+    type: object
+    properties:
+      service_name:
+        type: string
+        default: "Yandex Plus"
+      price:
+        type: integer
+        default: 400
+      user_id:
+        type: string
+        format: uuid
+        default: "60601fee-2bf1-4721-ae6f-7636e79a0cba"
+      start_date:
+        type: string
+        format: month-year
+        default: "07-2025"
+      end_date:
+        type: string
+        format: month-year
+        default: "08-2025"
+  SubscriptionUpdate:
+    type: object
+    properties:
+      service_name:
+        type: string
+        default: "Yandex Plus"
+      price:
+        type: integer
+        default: 400
+      user_id:
+        type: string
+        format: uuid
+        default: "60601fee-2bf1-4721-ae6f-7636e79a0cba"
+      start_date:
+        type: string
+        format: month-year
+        default: "07-2025"
+      end_date:
+        type: string
+        format: month-year
+        default: "09-2025"
+  SubscriptionsTotal:
+    type: object
+    properties:
+      start:
+        type: string
+        format: month-year
+        default: "07-2025"
+      end:
+        type: string
+        format: month-year
+        default: "09-2025"
+      service_name:
+        type: string
+        default: "Yandex Plus"
+      user_id:
+        type: string
+        format: uuid
+        default: "60601fee-2bf1-4721-ae6f-7636e79a0cba"
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+      message:
+        type: string

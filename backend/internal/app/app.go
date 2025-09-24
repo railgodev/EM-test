@@ -53,10 +53,10 @@ func Run() error {
 	router := gin.Default()
 
 	// Serve swagger.yaml
-	router.StaticFile("/swagger.yaml", "./swagger.yaml")
+	router.StaticFile("/docs/swagger.yaml", "./docs/swagger.yaml")
 
 	// Serve Swagger UI
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/swagger.yaml")))
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/docs/swagger.yaml")))
 
 	api := router.Group("/api/v1/")
 	api.GET("/subscriptions", h.List)

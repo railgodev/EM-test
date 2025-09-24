@@ -26,9 +26,19 @@ func (m *MonthYear) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+func (m *MonthYear) UnmarshalText(text []byte) error {
+	s := string(text)
+	t, err := time.Parse(monthYearLayout, s)
+	if err != nil {
+		return fmt.Errorf("invalid month-year format: %w", err)
+	}
+	m.Time = t
+	return nil
+}
+
 
 func (m MonthYear) MarshalJSON() ([]byte, error) {
-	return []byte(m.Time.Format(monthYearLayout)), nil
+	return []byte(fmt.Sprintf("\"%s\"", m.Time.Format(monthYearLayout))), nil
 }
 
 func (m MonthYear) Value() (driver.Value, error) {
